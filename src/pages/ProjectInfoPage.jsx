@@ -4,6 +4,8 @@ import MainLayout from '../components/Layout/MainLayout';
 import FormSection from '../components/Form/FormSection';
 import TextAreaField from '../components/Form/TextAreaField';
 
+import { FolderOpen, Target, Lightbulb, TrendingUp, Users } from 'lucide-react';
+
 // Configuration for questions to map IDs to specific question text
 const QUESTION_CONFIG = [
     // Service Core (1-x)
@@ -114,7 +116,7 @@ const ProjectInfoPage = () => {
     const scrollToSection = (id) => {
         const element = document.getElementById(id);
         if (element) {
-            const offset = 40;
+            const offset = 100;
             const bodyRect = document.body.getBoundingClientRect().top;
             const elementRect = element.getBoundingClientRect().top;
             const elementPosition = elementRect - bodyRect;
@@ -128,21 +130,62 @@ const ProjectInfoPage = () => {
         }
     };
 
+    const sidebarItems = [
+        {
+            id: 'service-core',
+            label: '서비스 핵심 정보',
+            icon: FolderOpen,
+            subItems: [
+                { id: '1-1', label: '서비스 이름' },
+                { id: '1-2', label: '한 줄 소개' },
+                { id: '1-3', label: '계기 및 문제' },
+            ]
+        },
+        {
+            id: 'problem-customer',
+            label: '문제 인식 & 고객 정의',
+            icon: Target,
+            subItems: [
+                { id: '2-1', label: '핵심 문제' },
+                { id: '2-2', label: '타겟 고객' },
+                { id: '2-3', label: '기존 해결' },
+                { id: '2-4', label: '불편한 점' },
+            ]
+        },
+        {
+            id: 'feasibility',
+            label: '개요 & 실현 가능성',
+            icon: Lightbulb,
+            subItems: [
+                { id: '3-1', label: '핵심 기능' },
+                { id: '3-2', label: '차별점' },
+                { id: '3-3', label: '구현 수준' },
+            ]
+        },
+        {
+            id: 'growth-strategy',
+            label: '성장 전략 & 사업화',
+            icon: TrendingUp,
+            subItems: [
+                { id: '4-1', label: '수익 모델' },
+                { id: '4-2', label: '초기 도입' },
+                { id: '4-3', label: '확장 전략' },
+            ]
+        },
+        {
+            id: 'team',
+            label: '팀 구성 & 역할',
+            icon: Users,
+            subItems: [
+                { id: '5-1', label: '팀 구성' },
+                { id: '5-2', label: '팀 역량' },
+            ]
+        },
+    ];
+
     return (
-        <MainLayout activeSection={activeSection} onSectionClick={scrollToSection}>
-            <div style={{ marginBottom: '4rem' }}>
-                <h1 style={{
-                    fontSize: '2rem',
-                    fontWeight: '800',
-                    color: 'var(--primary)',
-                    marginBottom: 'var(--spacing-sm)'
-                }}>
-                    서비스 핵심 정보
-                </h1>
-                <p style={{ color: 'var(--text-muted)' }}>
-                    프로젝트의 핵심 가치와 목표를 명확하게 정의해주세요.
-                </p>
-            </div>
+        <MainLayout activeSection={activeSection} onSectionClick={scrollToSection} sidebarItems={sidebarItems}>
+
 
             <div style={{
                 backgroundColor: 'var(--surface)',
@@ -152,6 +195,7 @@ const ProjectInfoPage = () => {
             }}>
                 <FormSection id="service-core" title="서비스 핵심 정보">
                     <TextAreaField
+                        id="1-1"
                         label={QUESTION_CONFIG[0].label}
                         placeholder="서비스명을 입력해주세요."
                         helpText="기억하기 쉽고 서비스의 특징을 잘 나타내는 이름이 좋습니다."
@@ -159,6 +203,7 @@ const ProjectInfoPage = () => {
                         onChange={(e) => handleInputChange('1-1', e.target.value)}
                     />
                     <TextAreaField
+                        id="1-2"
                         label={QUESTION_CONFIG[1].label}
                         placeholder="예: 000문제를 해결하는 000 서비스"
                         helpText="서비스의 핵심 가치를 가장 잘 드러내는 한 문장을 작성해주세요."
@@ -166,6 +211,7 @@ const ProjectInfoPage = () => {
                         onChange={(e) => handleInputChange('1-2', e.target.value)}
                     />
                     <TextAreaField
+                        id="1-3"
                         label={QUESTION_CONFIG[2].label}
                         placeholder="어떤 불편함이나 필요성에서 시작되었나요?"
                         helpText="개인적인 경험이나 관찰한 문제 상황을 구체적으로 적어주세요."
@@ -177,6 +223,7 @@ const ProjectInfoPage = () => {
 
                 <FormSection id="problem-customer" title="문제 인식 & 고객 정의">
                     <TextAreaField
+                        id="2-1"
                         label={QUESTION_CONFIG[3].label}
                         placeholder="구체적인 문제 상황을 정의해주세요."
                         helpText="표면적인 현상보다 근본적인 원인에 집중해주세요."
@@ -184,6 +231,7 @@ const ProjectInfoPage = () => {
                         onChange={(e) => handleInputChange('2-1', e.target.value)}
                     />
                     <TextAreaField
+                        id="2-2"
                         label={QUESTION_CONFIG[4].label}
                         placeholder="주요 타겟 고객층을 정의해주세요."
                         helpText="구체적인 특성(나이, 직업, 상황 등)을 포함하면 좋습니다."
@@ -191,12 +239,14 @@ const ProjectInfoPage = () => {
                         onChange={(e) => handleInputChange('2-2', e.target.value)}
                     />
                     <TextAreaField
+                        id="2-3"
                         label={QUESTION_CONFIG[5].label}
                         placeholder="경쟁 서비스나 대체재가 있다면 적어주세요."
                         value={answers['2-3']}
                         onChange={(e) => handleInputChange('2-3', e.target.value)}
                     />
                     <TextAreaField
+                        id="2-4"
                         label={QUESTION_CONFIG[6].label}
                         placeholder="1. 비용이 비싸다... 2. 시간이 오래 걸린다..."
                         minHeight="160px"
@@ -207,18 +257,21 @@ const ProjectInfoPage = () => {
 
                 <FormSection id="feasibility" title="개요 & 실현 가능성">
                     <TextAreaField
+                        id="3-1"
                         label={QUESTION_CONFIG[7].label}
                         placeholder="주요 기능 3~5가지를 나열해주세요."
                         value={answers['3-1']}
                         onChange={(e) => handleInputChange('3-1', e.target.value)}
                     />
                     <TextAreaField
+                        id="3-2"
                         label={QUESTION_CONFIG[8].label}
                         placeholder="우리 서비스만이 제공할 수 있는 가치를 설명해주세요."
                         value={answers['3-2']}
                         onChange={(e) => handleInputChange('3-2', e.target.value)}
                     />
                     <TextAreaField
+                        id="3-3"
                         label={QUESTION_CONFIG[9].label}
                         placeholder="기획 단계, 프로토타입 완료 등 현재 진행 상황을 적어주세요."
                         value={answers['3-3']}
@@ -228,18 +281,21 @@ const ProjectInfoPage = () => {
 
                 <FormSection id="growth-strategy" title="성장 전략 & 사업화">
                     <TextAreaField
+                        id="4-1"
                         label={QUESTION_CONFIG[10].label}
                         placeholder="비즈니스 모델(수익 구조)을 설명해주세요."
                         value={answers['4-1']}
                         onChange={(e) => handleInputChange('4-1', e.target.value)}
                     />
                     <TextAreaField
+                        id="4-2"
                         label={QUESTION_CONFIG[11].label}
                         placeholder="초기 시장 진입 전략을 적어주세요."
                         value={answers['4-2']}
                         onChange={(e) => handleInputChange('4-2', e.target.value)}
                     />
                     <TextAreaField
+                        id="4-3"
                         label={QUESTION_CONFIG[12].label}
                         placeholder="향후 로드맵이나 확장 가능성을 설명해주세요."
                         value={answers['4-3']}
@@ -249,6 +305,7 @@ const ProjectInfoPage = () => {
 
                 <FormSection id="team" title="팀 구성 & 역할">
                     <TextAreaField
+                        id="5-1"
                         label={QUESTION_CONFIG[13].label}
                         placeholder="이름(역할) 형태로 적어주세요. 예: 김철수(기획/디자인)"
                         minHeight="160px"
@@ -256,6 +313,7 @@ const ProjectInfoPage = () => {
                         onChange={(e) => handleInputChange('5-1', e.target.value)}
                     />
                     <TextAreaField
+                        id="5-2"
                         label={QUESTION_CONFIG[14].label}
                         placeholder="팀원들의 경험, 역량, 팀워크 등을 어필해주세요."
                         value={answers['5-2']}

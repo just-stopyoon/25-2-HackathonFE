@@ -4,32 +4,34 @@ import Sidebar from '../Navigation/Sidebar';
 import Footer from './Footer';
 import Header from './Header';
 
-const MainLayout = ({ children, activeSection, onSectionClick }) => {
+const MainLayout = ({ children, activeSection, onSectionClick, sidebarItems }) => {
     return (
-        <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--background)' }}>
-            <Sidebar activeSection={activeSection} onSectionClick={onSectionClick} />
+        <div style={{ minHeight: '100vh', backgroundColor: 'var(--background)', display: 'flex', flexDirection: 'column' }}>
+            <Header />
+            <Sidebar activeSection={activeSection} onSectionClick={onSectionClick} menuItems={sidebarItems} />
             <main style={{
+                marginLeft: '300px',
+                paddingTop: '64px',
+                width: 'auto',
                 flex: 1,
-                marginLeft: '280px',
-                width: '100%',
                 display: 'flex',
                 flexDirection: 'column'
             }}>
-                <Header />
                 <div style={{
                     padding: 'var(--spacing-xl)',
                     maxWidth: '1200px',
                     width: '100%',
-                    margin: '0 auto'
+                    margin: '0 auto',
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column'
                 }}>
-                    <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+                    <div style={{ maxWidth: '900px', margin: '0 auto', width: '100%' }}>
                         {children}
-                    </div>
-                    <div style={{ marginTop: 'auto' }}>
-                        <Footer />
                     </div>
                 </div>
             </main>
+            <Footer />
         </div>
     );
 };

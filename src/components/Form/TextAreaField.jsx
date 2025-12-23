@@ -1,9 +1,9 @@
 import React from 'react';
 import { Lightbulb } from 'lucide-react';
 
-const TextAreaField = ({ label, placeholder, helpText, minHeight = "120px", value, onChange, name }) => {
+const TextAreaField = ({ id, label, placeholder, helpText, minHeight = "120px", value, onChange, name }) => {
     return (
-        <div style={{ marginBottom: 'var(--spacing-xl)' }}>
+        <div id={id} style={{ marginBottom: 'var(--spacing-xl)', scrollMarginTop: '100px' }}>
             <div style={{
                 display: 'flex',
                 justifyContent: 'space-between',

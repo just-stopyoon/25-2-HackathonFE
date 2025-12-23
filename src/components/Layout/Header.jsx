@@ -6,13 +6,19 @@ const Header = () => {
 
     return (
         <header style={{
-            padding: 'var(--spacing-md) var(--spacing-xl)',
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '64px',
+            zIndex: 50,
+            padding: '0 var(--spacing-xl)',
             borderBottom: '1px solid var(--border)',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
             backgroundColor: 'white',
-            width: '100%'
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
         }}>
             <div
                 onClick={() => navigate('/recommendations')}

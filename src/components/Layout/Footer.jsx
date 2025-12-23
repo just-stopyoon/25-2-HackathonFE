@@ -2,7 +2,7 @@ import React from 'react';
 
 const Footer = () => {
     return (
-        <footer style={{ backgroundColor: '#28328c', color: 'white', padding: 'var(--spacing-xl) 0', marginTop: '4rem' }}>
+        <footer style={{ backgroundColor: '#28328c', color: 'white', padding: 'var(--spacing-xl) 0', paddingLeft: '300px', marginTop: '4rem' }}>
             <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 var(--spacing-md)', fontSize: '0.85rem' }}>
                 <div style={{ display: 'flex', gap: 'var(--spacing-lg)', marginBottom: 'var(--spacing-lg)', fontWeight: '600' }}>
                     <span>개인정보처리방침</span>

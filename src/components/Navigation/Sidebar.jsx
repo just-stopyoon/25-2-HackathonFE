@@ -1,24 +1,19 @@
 import React from 'react';
 import { Menu, CheckCircle, Circle, FolderOpen, Target, Lightbulb, TrendingUp, Users } from 'lucide-react';
 
-const Sidebar = ({ activeSection, onSectionClick }) => {
-    const menuItems = [
-        { id: 'service-core', label: '서비스 핵심 정보', icon: FolderOpen },
-        { id: 'problem-customer', label: '문제 인식 & 고객 정의', icon: Target },
-        { id: 'feasibility', label: '개요 & 실현 가능성', icon: Lightbulb },
-        { id: 'growth-strategy', label: '성장 전략 & 사업화', icon: TrendingUp },
-        { id: 'team', label: '팀 구성 & 역할', icon: Users },
-    ];
+const Sidebar = ({ activeSection, onSectionClick, menuItems = [] }) => {
 
     return (
         <aside style={{
-            width: '280px',
+            width: '260px',
             backgroundColor: 'white',
-            height: '100vh',
+            height: 'calc(100vh - 96px)',
             position: 'fixed',
-            left: 0,
-            top: 0,
-            borderRight: '1px solid var(--border)',
+            left: '16px',
+            top: '80px',
+            borderRadius: 'var(--radius-lg)',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+            border: '1px solid var(--border)',
             display: 'flex',
             flexDirection: 'column',
             zIndex: 10
@@ -50,11 +45,12 @@ const Sidebar = ({ activeSection, onSectionClick }) => {
                 <ul style={{ listStyle: 'none' }}>
                     {menuItems.map((item) => {
                         const Icon = item.icon;
-                        const isActive = activeSection === item.id;
+                        const isActive = activeSection === item.id || (item.subItems && item.subItems.some(sub => sub.id === activeSection));
+                        const isExpanded = isActive; // Expand if active
 
                         return (
                             <li key={item.id} style={{ marginBottom: 'var(--spacing-xs)' }}>
-                                <button
+                                <div
                                     onClick={() => onSectionClick(item.id)}
                                     style={{
                                         width: '100%',
@@ -63,27 +59,54 @@ const Sidebar = ({ activeSection, onSectionClick }) => {
                                         gap: 'var(--spacing-md)',
                                         padding: 'var(--spacing-md)',
                                         borderRadius: 'var(--radius-md)',
-                                        backgroundColor: isActive ? 'var(--primary-light)' : 'transparent',
+                                        backgroundColor: isActive && !item.subItems ? 'var(--primary-light)' : 'transparent',
                                         color: isActive ? 'var(--primary)' : 'var(--text-muted)',
+                                        cursor: 'pointer',
                                         transition: 'all var(--transition-fast)',
-                                        textAlign: 'left'
                                     }}
                                 >
-                                    <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+                                    {Icon && <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />}
                                     <span style={{
                                         fontWeight: isActive ? '600' : '500',
                                         fontSize: '0.95rem'
                                     }}>
                                         {item.label}
                                     </span>
-                                    {isActive && <div style={{
-                                        marginLeft: 'auto',
-                                        width: '6px',
-                                        height: '6px',
-                                        borderRadius: '50%',
-                                        backgroundColor: 'var(--primary)'
-                                    }} />}
-                                </button>
+                                </div>
+
+                                {isExpanded && item.subItems && (
+                                    <ul style={{
+                                        listStyle: 'none',
+                                        paddingLeft: '3rem',
+                                        marginTop: '4px',
+                                        borderLeft: '2px solid var(--border)',
+                                        marginLeft: '1.4rem'
+                                    }}>
+                                        {item.subItems.map((subItem) => {
+                                            const isSubActive = activeSection === subItem.id;
+                                            return (
+                                                <li key={subItem.id} style={{ marginBottom: '8px' }}>
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            onSectionClick(subItem.id);
+                                                        }}
+                                                        style={{
+                                                            fontSize: '0.85rem',
+                                                            color: isSubActive ? 'var(--primary)' : 'var(--text-muted)',
+                                                            fontWeight: isSubActive ? '600' : '400',
+                                                            textAlign: 'left',
+                                                            padding: '4px 0',
+                                                            width: '100%'
+                                                        }}
+                                                    >
+                                                        {subItem.label}
+                                                    </button>
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+                                )}
                             </li>
                         );
                     })}

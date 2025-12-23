@@ -1,7 +1,9 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Calendar, User } from 'lucide-react';
 
-const ContestCard = ({ title, organization, dueDate, categories, image }) => {
+const ContestCard = ({ id, title, organization, dueDate, categories, image }) => {
+    const navigate = useNavigate();
     return (
         <div style={{
             backgroundColor: 'white',
@@ -15,6 +17,7 @@ const ContestCard = ({ title, organization, dueDate, categories, image }) => {
             flexDirection: 'column',
             height: '100%'
         }}
+            onClick={() => navigate(`/competitions/${id}`)}
             onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-4px)';
                 e.currentTarget.style.boxShadow = 'var(--shadow-lg)';
@@ -100,19 +103,6 @@ const ContestCard = ({ title, organization, dueDate, categories, image }) => {
                             {cat}
                         </span>
                     ))}
-                    {/* Mock AI badge if needed */}
-                    {title.includes('AI') && (
-                        <span style={{
-                            fontSize: '0.75rem',
-                            fontWeight: '600',
-                            color: 'var(--accent)',
-                            backgroundColor: '#ede9fe',
-                            padding: '4px 8px',
-                            borderRadius: 'var(--radius-sm)'
-                        }}>
-                            AI 우대
-                        </span>
-                    )}
                 </div>
             </div>
         </div>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import SearchBar from '../components/Search/SearchBar';
 import ContestCard from '../components/Card/ContestCard';
 
@@ -20,34 +20,53 @@ const Header = () => (
     </header>
 );
 
+// Placeholder images to cycle through
+const PLACEHOLDER_IMAGES = [
+    "https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1531403009284-440f080d1e12?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+];
+
 const ContestRecommendationPage = () => {
-    // Mock Data
-    const contests = [
-        {
-            id: 1,
-            title: '2025 입주기업 모집공고',
-            organization: '세종대 캠퍼스타운',
-            dueDate: '11/15 (금)',
-            categories: ['캠퍼스타운', '창업 7년 미만'],
-            image: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" // Office/Startup bg
-        },
-        {
-            id: 2,
-            title: 'KU 스타트업 스케일업: KU IR CAMP',
-            organization: '건국대 캠퍼스타운',
-            dueDate: '07/08 (월)',
-            categories: ['1:1 멘토링 진행', '서류만 심사'],
-            image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" // Meeting/Business
-        },
-        {
-            id: 3,
-            title: '2025년 딥테크 챌린지 프로젝트',
-            organization: '범부처 통합연구지원시스템',
-            dueDate: '04/30 (목)',
-            categories: ['R&D 산업', '서류 평가', '스케일업'],
-            image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" // Tech/Computers
-        }
-    ];
+    const [contests, setContests] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+
+
+    useEffect(() => {
+        const fetchContests = async () => {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/v1/competitions/recommend');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch recommendations');
+                }
+                const data = await response.json();
+
+                // Map API data to component props and assign random image
+                const mappedData = data.map((item, index) => ({
+                    id: item.id || index,
+                    title: item.name,
+                    organization: item.organizer,
+                    dueDate: item.deadline, // Ensure this format is okay or format it
+                    categories: item.tracks,
+                    image: PLACEHOLDER_IMAGES[index % PLACEHOLDER_IMAGES.length]
+                }));
+
+                setContests(mappedData);
+            } catch (err) {
+                console.error("Error fetching contests:", err);
+                setError("공모전 정보를 불러오는 중 오류가 발생했습니다.");
+                // Fallback to empty or previous mock data could be an option, but showing error for now
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchContests();
+    }, []);
 
     return (
         <div style={{ minHeight: '100vh', backgroundColor: '#f8fafc' }}>
@@ -81,16 +100,26 @@ const ContestRecommendationPage = () => {
                     </h1>
                 </section>
 
-                {/* Grid */}
-                <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-                    gap: 'var(--spacing-xl)'
-                }}>
-                    {contests.map(contest => (
-                        <ContestCard key={contest.id} {...contest} />
-                    ))}
-                </div>
+                {/* Loading / Error / Grid */}
+                {loading ? (
+                    <div style={{ textAlign: 'center', padding: 'var(--spacing-xl)', color: 'var(--text-muted)' }}>
+                        추천 공모전을 불러오는 중입니다...
+                    </div>
+                ) : error ? (
+                    <div style={{ textAlign: 'center', padding: 'var(--spacing-xl)', color: 'var(--error)' }}>
+                        {error}
+                    </div>
+                ) : (
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+                        gap: 'var(--spacing-xl)'
+                    }}>
+                        {contests.map(contest => (
+                            <ContestCard key={contest.id} {...contest} />
+                        ))}
+                    </div>
+                )}
 
             </main>
         </div>

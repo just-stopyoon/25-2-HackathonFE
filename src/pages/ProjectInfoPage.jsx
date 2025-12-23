@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import MainLayout from '../components/Layout/MainLayout';
 import FormSection from '../components/Form/FormSection';
 import TextAreaField from '../components/Form/TextAreaField';
@@ -32,6 +33,7 @@ const QUESTION_CONFIG = [
 ];
 
 const ProjectInfoPage = () => {
+    const navigate = useNavigate();
     const [activeSection, setActiveSection] = useState('service-core');
     const [answers, setAnswers] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -77,6 +79,7 @@ const ProjectInfoPage = () => {
 
             if (response.ok) {
                 alert('제출이 완료되었습니다!');
+                navigate('/recommendations');
             } else {
                 alert('제출에 실패했습니다. 다시 시도해주세요.');
                 console.error('Submission failed:', response.statusText);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Menu, CheckCircle, Circle, FolderOpen, Target, Lightbulb, TrendingUp, Users } from 'lucide-react';
 
 const Sidebar = ({ activeSection, onSectionClick }) => {

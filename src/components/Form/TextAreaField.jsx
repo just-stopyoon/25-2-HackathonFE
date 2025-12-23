@@ -1,7 +1,7 @@
 import React from 'react';
 import { Lightbulb } from 'lucide-react';
 
-const TextAreaField = ({ label, placeholder, helpText, minHeight = "120px" }) => {
+const TextAreaField = ({ label, placeholder, helpText, minHeight = "120px", value, onChange, name }) => {
     return (
         <div style={{ marginBottom: 'var(--spacing-xl)' }}>
             <div style={{
@@ -35,6 +35,9 @@ const TextAreaField = ({ label, placeholder, helpText, minHeight = "120px" }) =>
             </div>
 
             <textarea
+                name={name}
+                value={value}
+                onChange={onChange}
                 placeholder={placeholder}
                 style={{
                     width: '100%',

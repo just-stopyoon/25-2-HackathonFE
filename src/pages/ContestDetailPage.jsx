@@ -41,9 +41,9 @@ const ContestDetailPage = () => {
           poster:
             data.image ||
             "https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80",
-          eligibility: data.eligibility || "상세 공고 확인",
-          preferred: data.preferred || data.description || "상세 공고 확인",
-          support: data.support || "지원금 및 공간 지원 (상세 내용 참조)",
+          eligibility: data.target || "상세 공고 확인",
+          preferred: (data.tracks || []).join(", ") || "상세 공고 확인",
+          support: data.support || "-",
           deadline: data.deadline || "-",
           url: data.url,
         });

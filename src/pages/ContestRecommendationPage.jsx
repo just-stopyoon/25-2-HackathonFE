@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import SearchBar from "../components/Search/SearchBar";
 import ContestCard from "../components/Card/ContestCard";
 import Footer from "../components/Layout/Footer";
@@ -68,6 +69,7 @@ const MOCK_CONTESTS = [
 ];
 
 export default function ContestRecommendationPage() {
+  const navigate = useNavigate();
   const [contests, setContests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -82,16 +84,19 @@ export default function ContestRecommendationPage() {
       setError(null);
 
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/v1/competitions/recommend");
+        const response = await fetch("http://127.0.0.1:8000/api/v1/competitions/recommend/1", {
+          method: "POST",
+        });
         if (!response.ok) throw new Error("Failed to fetch recommendations");
 
         const data = await response.json();
-        const mappedData = data.map((item, index) => ({
+        const list = data.recommendations || [];
+        const mappedData = list.map((item, index) => ({
           id: item.id || index,
-          title: item.name,
+          title: item.title,
           organization: item.organizer,
           dueDate: item.deadline,
-          categories: item.tracks || [],
+          categories: item.keywords || [],
           image: PLACEHOLDER_IMAGES[index % PLACEHOLDER_IMAGES.length],
         }));
 
@@ -220,7 +225,12 @@ export default function ContestRecommendationPage() {
                 }}
               >
                 {filtered.map((contest) => (
-                  <ContestCard key={contest.id} {...contest} primaryColor={PRIMARY} />
+                  <ContestCard
+                    key={contest.id}
+                    {...contest}
+                    primaryColor={PRIMARY}
+                    onClick={() => navigate(`/contest/${contest.id}`)}
+                  />
                 ))}
               </div>
             </>
@@ -233,7 +243,12 @@ export default function ContestRecommendationPage() {
               }}
             >
               {filtered.map((contest) => (
-                <ContestCard key={contest.id} {...contest} primaryColor={PRIMARY} />
+                <ContestCard
+                  key={contest.id}
+                  {...contest}
+                  primaryColor={PRIMARY}
+                  onClick={() => navigate(`/contest/${contest.id}`)}
+                />
               ))}
             </div>
           )}

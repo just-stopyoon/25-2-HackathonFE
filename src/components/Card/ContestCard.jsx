@@ -3,15 +3,17 @@ import { Calendar } from "lucide-react";
 
 const PRIMARY = "#3338A0";
 
-export default function ContestCard({ title, organization, dueDate, categories = [], image }) {
+export default function ContestCard({ title, organization, dueDate, categories = [], image, onClick }) {
   return (
     <div
+      onClick={onClick}
       style={{
         background: "#fff",
         borderRadius: 14,
         overflow: "hidden",
         border: "1px solid #EEF2F7",
         boxShadow: "0 10px 24px rgba(15, 23, 42, 0.06)",
+        cursor: onClick ? "pointer" : "default",
       }}
     >
       <div style={{ width: "100%", height: 148, overflow: "hidden" }}>

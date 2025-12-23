@@ -1,147 +1,101 @@
-import React from 'react';
-import { Menu, CheckCircle, Circle, FolderOpen, Target, Lightbulb, TrendingUp, Users } from 'lucide-react';
+import React from "react";
+import { FolderOpen, Target, Lightbulb, TrendingUp, Users } from "lucide-react";
 
-const Sidebar = ({ activeSection, onSectionClick, menuItems = [] }) => {
+const Sidebar = ({
+  activeSection,
+  onSectionClick,
+  menuItems = [],
+  progressPercent = 0, // ✅ 외부에서 받음
+}) => {
+  return (
+    <aside
+      style={{
+        width: "260px",
+        backgroundColor: "white",
+        height: "calc(100vh - 96px)",
+        position: "fixed",
+        left: "16px",
+        top: "80px",
+        borderRadius: "16px",
+        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
+        border: "1px solid #E5E7EB",
+        display: "flex",
+        flexDirection: "column",
+        zIndex: 10,
+      }}
+    >
+      {/* Logo */}
+      <div
+        style={{
+          padding: "20px",
+          borderBottom: "1px solid #E5E7EB",
+          fontWeight: 800,
+          color: "#3338A0",
+          fontSize: "20px",
+        }}
+      >
+        BIZSTEP
+      </div>
 
-    return (
-        <aside style={{
-            width: '260px',
-            backgroundColor: 'white',
-            height: 'calc(100vh - 96px)',
-            position: 'fixed',
-            left: '16px',
-            top: '80px',
-            borderRadius: 'var(--radius-lg)',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
-            border: '1px solid var(--border)',
-            display: 'flex',
-            flexDirection: 'column',
-            zIndex: 10
-        }}>
-            {/* Logo Area */}
-            <div style={{
-                padding: 'var(--spacing-xl) var(--spacing-lg)',
-                borderBottom: '1px solid var(--border)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 'var(--spacing-sm)'
-            }}>
-                <div style={{
-                    width: '32px',
-                    height: '32px',
-                    backgroundColor: 'var(--primary)',
-                    borderRadius: 'var(--radius-sm)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'white',
-                    fontWeight: 'bold'
-                }}>M</div>
-                <span style={{ fontSize: '1.25rem', fontWeight: '800', color: 'var(--primary)' }}>MINDI</span>
+      {/* Menu */}
+      <nav style={{ flex: 1, padding: "12px" }}>
+        {menuItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = activeSection === item.id;
+
+          return (
+            <div
+              key={item.id}
+              onClick={() => onSectionClick(item.id)}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                padding: "10px 12px",
+                borderRadius: 10,
+                cursor: "pointer",
+                color: isActive ? "#3338A0" : "#6B7280",
+                background: isActive ? "#EEF0FF" : "transparent",
+                fontWeight: isActive ? 600 : 500,
+                marginBottom: 4,
+              }}
+            >
+              <Icon size={18} />
+              {item.label}
             </div>
+          );
+        })}
+      </nav>
 
-            {/* Menu Items */}
-            <nav style={{ flex: 1, padding: 'var(--spacing-md)', overflowY: 'auto' }}>
-                <ul style={{ listStyle: 'none' }}>
-                    {menuItems.map((item) => {
-                        const Icon = item.icon;
-                        const isActive = activeSection === item.id || (item.subItems && item.subItems.some(sub => sub.id === activeSection));
-                        const isExpanded = isActive; // Expand if active
-
-                        return (
-                            <li key={item.id} style={{ marginBottom: 'var(--spacing-xs)' }}>
-                                <div
-                                    onClick={() => onSectionClick(item.id)}
-                                    style={{
-                                        width: '100%',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: 'var(--spacing-md)',
-                                        padding: 'var(--spacing-md)',
-                                        borderRadius: 'var(--radius-md)',
-                                        backgroundColor: isActive && !item.subItems ? 'var(--primary-light)' : 'transparent',
-                                        color: isActive ? 'var(--primary)' : 'var(--text-muted)',
-                                        cursor: 'pointer',
-                                        transition: 'all var(--transition-fast)',
-                                    }}
-                                >
-                                    {Icon && <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />}
-                                    <span style={{
-                                        fontWeight: isActive ? '600' : '500',
-                                        fontSize: '0.95rem'
-                                    }}>
-                                        {item.label}
-                                    </span>
-                                </div>
-
-                                {isExpanded && item.subItems && (
-                                    <ul style={{
-                                        listStyle: 'none',
-                                        paddingLeft: '3rem',
-                                        marginTop: '4px',
-                                        borderLeft: '2px solid var(--border)',
-                                        marginLeft: '1.4rem'
-                                    }}>
-                                        {item.subItems.map((subItem) => {
-                                            const isSubActive = activeSection === subItem.id;
-                                            return (
-                                                <li key={subItem.id} style={{ marginBottom: '8px' }}>
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            onSectionClick(subItem.id);
-                                                        }}
-                                                        style={{
-                                                            fontSize: '0.85rem',
-                                                            color: isSubActive ? 'var(--primary)' : 'var(--text-muted)',
-                                                            fontWeight: isSubActive ? '600' : '400',
-                                                            textAlign: 'left',
-                                                            padding: '4px 0',
-                                                            width: '100%'
-                                                        }}
-                                                    >
-                                                        {subItem.label}
-                                                    </button>
-                                                </li>
-                                            );
-                                        })}
-                                    </ul>
-                                )}
-                            </li>
-                        );
-                    })}
-                </ul>
-            </nav>
-
-            {/* Footer / Status Area */}
-            <div style={{ padding: 'var(--spacing-md)', borderTop: '1px solid var(--border)' }}>
-                <div style={{
-                    padding: 'var(--spacing-md)',
-                    backgroundColor: 'var(--background)',
-                    borderRadius: 'var(--radius-md)',
-                    fontSize: '0.875rem'
-                }}>
-                    <p style={{ fontWeight: '600', marginBottom: 'var(--spacing-xs)', color: 'var(--text-main)' }}>
-                        작성 진행률
-                    </p>
-                    <div style={{
-                        width: '100%',
-                        height: '6px',
-                        backgroundColor: 'var(--border)',
-                        borderRadius: 'var(--radius-full)',
-                        overflow: 'hidden'
-                    }}>
-                        <div style={{
-                            width: '15%',
-                            height: '100%',
-                            backgroundColor: 'var(--success)',
-                            borderRadius: 'var(--radius-full)'
-                        }} />
-                    </div>
-                </div>
-            </div>
-        </aside>
-    );
+      {/* Progress */}
+      <div style={{ padding: "16px", borderTop: "1px solid #E5E7EB" }}>
+        <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 8 }}>
+          작성 진행률
+        </p>
+        <div
+          style={{
+            width: "100%",
+            height: 6,
+            background: "#E5E7EB",
+            borderRadius: 999,
+          }}
+        >
+          <div
+            style={{
+              width: `${progressPercent}%`,
+              height: "100%",
+              background: "#3338A0",
+              borderRadius: 999,
+              transition: "width 0.3s ease",
+            }}
+          />
+        </div>
+        <p style={{ fontSize: 12, marginTop: 6, color: "#6B7280" }}>
+          {progressPercent}% 완료
+        </p>
+      </div>
+    </aside>
+  );
 };
 
 export default Sidebar;

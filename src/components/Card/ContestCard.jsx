@@ -1,112 +1,67 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Calendar, User } from 'lucide-react';
+import React from "react";
+import { Calendar } from "lucide-react";
 
-const ContestCard = ({ id, title, organization, dueDate, categories, image }) => {
-    const navigate = useNavigate();
-    return (
-        <div style={{
-            backgroundColor: 'white',
-            borderRadius: 'var(--radius-lg)',
-            overflow: 'hidden',
-            boxShadow: 'var(--shadow-md)',
-            border: '1px solid var(--border)',
-            transition: 'transform var(--transition-normal), box-shadow var(--transition-normal)',
-            cursor: 'pointer',
-            display: 'flex',
-            flexDirection: 'column',
-            height: '100%'
-        }}
-            onClick={() => navigate(`/competitions/${id}`)}
-            onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-4px)';
-                e.currentTarget.style.boxShadow = 'var(--shadow-lg)';
-            }}
-            onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'var(--shadow-md)';
-            }}
+const PRIMARY = "#3338A0";
+
+export default function ContestCard({ title, organization, dueDate, categories = [], image }) {
+  return (
+    <div
+      style={{
+        background: "#fff",
+        borderRadius: 14,
+        overflow: "hidden",
+        border: "1px solid #EEF2F7",
+        boxShadow: "0 10px 24px rgba(15, 23, 42, 0.06)",
+      }}
+    >
+      <div style={{ width: "100%", height: 148, overflow: "hidden" }}>
+        <img src={image} alt={title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+      </div>
+
+      <div style={{ padding: "14px 16px 16px" }}>
+        <div style={{ fontSize: 12, fontWeight: 600, color: "#6B7280", marginBottom: 6 }}>{organization}</div>
+
+        <div
+          style={{
+            fontSize: 18,
+            fontWeight: 700,
+            lineHeight: 1.35,
+            color: "#111827",
+            marginBottom: 10,
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+          }}
         >
-            {/* Image Section */}
-            <div style={{
-                height: '180px',
-                backgroundColor: '#e2e8f0',
-                position: 'relative',
-                overflow: 'hidden'
-            }}>
-                {image ? (
-                    <img src={image} alt={title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                ) : (
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#94a3b8' }}>
-                        No Image
-                    </div>
-                )}
-                {/* Star Icon Overlay (Mock) */}
-                <div style={{
-                    position: 'absolute',
-                    top: '12px',
-                    right: '12px',
-                    color: 'white',
-                    background: 'rgba(0,0,0,0.3)',
-                    borderRadius: '50%',
-                    padding: '4px'
-                }}>
-                    <span style={{ fontSize: '1.2rem' }}>★</span>
-                </div>
-            </div>
-
-            {/* Content Section */}
-            <div style={{ padding: 'var(--spacing-lg)', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <div style={{
-                    fontSize: '0.85rem',
-                    color: 'var(--text-muted)',
-                    fontWeight: '600',
-                    marginBottom: 'var(--spacing-xs)'
-                }}>
-                    {organization}
-                </div>
-
-                <h3 style={{
-                    fontSize: '1.1rem',
-                    fontWeight: '700',
-                    lineHeight: '1.4',
-                    marginBottom: 'var(--spacing-md)',
-                    color: 'var(--text-main)',
-                    flex: 1
-                }}>
-                    {title}
-                </h3>
-
-                <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 'var(--spacing-sm)',
-                    fontSize: '0.875rem',
-                    color: 'var(--text-muted)',
-                    marginBottom: 'var(--spacing-md)'
-                }}>
-                    <Calendar size={16} />
-                    <span>서류 마감 ~ {dueDate}</span>
-                </div>
-
-                {/* Tags */}
-                <div style={{ display: 'flex', gap: 'var(--spacing-xs)', flexWrap: 'wrap' }}>
-                    {categories.map((cat, index) => (
-                        <span key={index} style={{
-                            fontSize: '0.75rem',
-                            fontWeight: '600',
-                            color: 'var(--primary)',
-                            backgroundColor: 'var(--primary-light)',
-                            padding: '4px 8px',
-                            borderRadius: 'var(--radius-sm)'
-                        }}>
-                            {cat}
-                        </span>
-                    ))}
-                </div>
-            </div>
+          {title}
         </div>
-    );
-};
 
-export default ContestCard;
+        <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#6B7280", fontSize: 13 }}>
+          <Calendar size={16} />
+          <span>서류 마감 ~ {dueDate}</span>
+        </div>
+
+        {/* ✅ 태그 radius: 999 → 4px */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 }}>
+          {categories.slice(0, 3).map((t) => (
+            <span
+              key={t}
+              style={{
+                fontSize: 12,
+                fontWeight: 700,
+                color: PRIMARY,
+                background: "#EEF2FF",
+                border: "1px solid #E6E8F5",
+                padding: "6px 10px",
+                borderRadius: 4, // ✅ 여기!!!
+              }}
+            >
+              {t}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}

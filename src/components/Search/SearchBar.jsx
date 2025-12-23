@@ -1,67 +1,97 @@
-import React from 'react';
-import { Search } from 'lucide-react';
+import React from "react";
+import { Search } from "lucide-react";
 
-const SearchBar = () => {
-    const popularTags = ['캠퍼스타운 공모전', '예비창업자 패키지', '중소기업 벤처사업부 기획'];
+export default function SearchBar({
+  primaryColor = "#3338A0",
+  value,
+  onChange,
+  activeChip,
+  onChipChange,
+}) {
+  const chips = [
+    "캠퍼스타운 공모전",
+    "예비창업자 패키지",
+    "중소기업 벤처사업부 / 기획",
+  ];
 
-    return (
-        <div style={{ width: '100%', maxWidth: '800px', margin: '0 auto', marginBottom: 'var(--spacing-xl)' }}>
-            {/* Input Group */}
-            <div style={{
-                position: 'relative',
-                marginBottom: 'var(--spacing-md)'
-            }}>
-                <input
-                    type="text"
-                    placeholder="인공지능을 활용한 공모전을 검색해보세요."
-                    style={{
-                        width: '100%',
-                        padding: 'var(--spacing-lg) var(--spacing-xl)',
-                        paddingLeft: '3.5rem',
-                        fontSize: '1.25rem',
-                        border: 'none',
-                        borderBottom: '3px solid var(--primary)',
-                        backgroundColor: 'transparent',
-                        outline: 'none',
-                        color: 'var(--text-main)',
-                        fontFamily: 'inherit'
-                    }}
-                />
-                <Search
-                    size={32}
-                    color="var(--primary)"
-                    style={{
-                        position: 'absolute',
-                        left: '0.5rem',
-                        top: '50%',
-                        transform: 'translateY(-50%)'
-                    }}
-                />
-            </div>
+  return (
+    <div
+      style={{
+        width: "100%",
+        maxWidth: 1040,
+        margin: "0 auto",
+      }}
+    >
+      {/* 검색 영역 */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 14,
+          paddingBottom: 14,
+          borderBottom: `3px solid ${primaryColor}`,
+        }}
+      >
+        {/* ✅ 정상적인 돋보기 아이콘 */}
+        <Search
+          size={22}
+          strokeWidth={2.2}
+          color={primaryColor}
+        />
 
-            {/* Tags */}
-            <div style={{ display: 'flex', gap: 'var(--spacing-sm)', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-                {popularTags.map((tag, idx) => (
-                    <button key={idx} style={{
-                        padding: '8px 16px',
-                        borderRadius: 'var(--radius-full)',
-                        backgroundColor: 'var(--primary-light)',
-                        color: 'var(--primary)',
-                        fontSize: '0.9rem',
-                        fontWeight: '600',
-                        border: 'none',
-                        cursor: 'pointer',
-                        transition: 'background-color var(--transition-fast)'
-                    }}
-                        onMouseEnter={(e) => e.target.style.backgroundColor = '#c7d2fe'}
-                        onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--primary-light)'}
-                    >
-                        {tag}
-                    </button>
-                ))}
-            </div>
-        </div>
-    );
-};
+        <input
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="인공지능을 활용한 공모전을 검색해보세요."
+          style={{
+            flex: 1,
+            border: "none",
+            outline: "none",
+            fontSize: 18,
+            fontWeight: 500,
+            color: "#111827",
+            padding: "10px 0",
+          }}
+        />
+      </div>
 
-export default SearchBar;
+      {/* 필터 칩 */}
+      <div
+        style={{
+          marginTop: 18,
+          display: "flex",
+          gap: 12,
+          flexWrap: "wrap",
+        }}
+      >
+        {chips.map((chip) => {
+          const isActive = chip === activeChip;
+
+          return (
+            <button
+              key={chip}
+              onClick={() => onChipChange(isActive ? "" : chip)}
+              style={{
+                padding: "10px 18px",
+                borderRadius: 999,
+                border: "none",
+                backgroundColor: isActive
+                  ? primaryColor
+                  : "#EEF2FF",
+                color: isActive
+                  ? "#FFFFFF"
+                  : primaryColor,
+                fontSize: 14,
+                fontWeight: 600,
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+              }}
+            >
+              {chip}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}

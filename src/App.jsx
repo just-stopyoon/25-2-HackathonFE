@@ -1,18 +1,19 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import ProjectInfoPage from './pages/ProjectInfoPage';
-import ContestRecommendationPage from './pages/ContestRecommendationPage';
-import ContestDetailPage from './pages/ContestDetailPage';
+import React from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
-function App() {
+import ProjectInfoPage from "./pages/ProjectInfoPage";
+import ContestRecommendationPage from "./pages/ContestRecommendationPage";
+import ContestDetailPage from "./pages/ContestDetailPage";
+
+export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<ProjectInfoPage />} />
+        <Route path="/" element={<Navigate to="/project" replace />} />
+        <Route path="/project" element={<ProjectInfoPage />} />
         <Route path="/recommendations" element={<ContestRecommendationPage />} />
-        <Route path="/competitions/:id" element={<ContestDetailPage />} />
+        <Route path="/contest/:id" element={<ContestDetailPage />} />
       </Routes>
     </BrowserRouter>
   );
 }
-
-export default App

@@ -1,21 +1,70 @@
-// src/pages/ContestRecommendationPage.jsx
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import SearchBar from "../components/Search/SearchBar";
 import ContestCard from "../components/Card/ContestCard";
 import Footer from "../components/Layout/Footer";
 import Header from "../components/Layout/Header";
-import { ChevronDown } from "lucide-react";
 
-// 메인 컬러
 const PRIMARY = "#3338A0";
 
-// Placeholder images to cycle through (백엔드 전까지 유지)
+// Placeholder images to cycle through
 const PLACEHOLDER_IMAGES = [
-  "https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1531403009284-440f080d1e12?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1531403009284-440f080d1e12?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+];
+
+// 백엔드 안 붙었을 때 UI 확인용 mock
+const MOCK_CONTESTS = [
+  {
+    id: "m1",
+    title: "2025 입주기업 모집공고",
+    organization: "세종대 캠퍼스타운",
+    dueDate: "11/15 (금)",
+    categories: ["캠퍼스타운", "창업 7년 미만", "AI 우대"],
+    image: PLACEHOLDER_IMAGES[0],
+  },
+  {
+    id: "m2",
+    title: "KU 스타트업 스케일업: KU IR CAMP",
+    organization: "건국대 캠퍼스타운",
+    dueDate: "07/08 (월)",
+    categories: ["1:1 멘토링", "서류만 심사", "AI 우대"],
+    image: PLACEHOLDER_IMAGES[2],
+  },
+  {
+    id: "m3",
+    title: "2025년 딥테크 챌린지 프로젝트",
+    organization: "범부처 통합연구지원시스템",
+    dueDate: "04/30 (화)",
+    categories: ["R&D 사업", "서류 평가", "스케일업"],
+    image: PLACEHOLDER_IMAGES[3],
+  },
+  {
+    id: "m4",
+    title: "2025 입주기업 모집공고",
+    organization: "세종대 캠퍼스타운",
+    dueDate: "11/15 (금)",
+    categories: ["캠퍼스타운", "창업 7년 미만", "AI 우대"],
+    image: PLACEHOLDER_IMAGES[1],
+  },
+  {
+    id: "m5",
+    title: "KU 스타트업 스케일업: KU IR CAMP",
+    organization: "건국대 캠퍼스타운",
+    dueDate: "07/08 (월)",
+    categories: ["1:1 멘토링", "서류만 심사", "AI 우대"],
+    image: PLACEHOLDER_IMAGES[4],
+  },
+  {
+    id: "m6",
+    title: "2025년 딥테크 챌린지 프로젝트",
+    organization: "범부처 통합연구지원시스템",
+    dueDate: "04/30 (화)",
+    categories: ["R&D 사업", "서류 평가", "스케일업"],
+    image: PLACEHOLDER_IMAGES[3],
+  },
 ];
 
 export default function ContestRecommendationPage() {
@@ -23,69 +72,20 @@ export default function ContestRecommendationPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // (백엔드 미연결이면) 화면이 깨지지 않게 샘플 데이터도 준비
-  const fallbackContests = useMemo(
-    () => [
-      {
-        id: 1,
-        title: "2025 입주기업 모집공고",
-        organization: "세종대 캠퍼스타운",
-        dueDate: "11/15 (금)",
-        categories: ["캠퍼스타운", "창업 7년 미만", "AI 우대"],
-        image: PLACEHOLDER_IMAGES[0],
-      },
-      {
-        id: 2,
-        title: "KU 스타트업 스케일업: KU IR CAMP",
-        organization: "건국대 캠퍼스타운",
-        dueDate: "07/08 (월)",
-        categories: ["1:1 멘토링", "서류만 심사", "AI 우대"],
-        image: PLACEHOLDER_IMAGES[2],
-      },
-      {
-        id: 3,
-        title: "2025년 딥테크 챌린지 프로젝트",
-        organization: "범부처 통합연구지원시스템",
-        dueDate: "04/30 (화)",
-        categories: ["R&D 사업", "서류 평가", "스케일업"],
-        image: PLACEHOLDER_IMAGES[4],
-      },
-      {
-        id: 4,
-        title: "2025 입주기업 모집공고",
-        organization: "세종대 캠퍼스타운",
-        dueDate: "11/15 (금)",
-        categories: ["캠퍼스타운", "창업 7년 미만", "AI 우대"],
-        image: PLACEHOLDER_IMAGES[1],
-      },
-      {
-        id: 5,
-        title: "KU 스타트업 스케일업: KU IR CAMP",
-        organization: "건국대 캠퍼스타운",
-        dueDate: "07/08 (월)",
-        categories: ["1:1 멘토링", "서류만 심사", "AI 우대"],
-        image: PLACEHOLDER_IMAGES[3],
-      },
-      {
-        id: 6,
-        title: "2025년 딥테크 챌린지 프로젝트",
-        organization: "범부처 통합연구지원시스템",
-        dueDate: "04/30 (화)",
-        categories: ["R&D 사업", "서류 평가", "스케일업"],
-        image: PLACEHOLDER_IMAGES[0],
-      },
-    ],
-    []
-  );
+  // SearchBar에서 올려주는 상태(검색/필터) - 지금은 UI용으로만
+  const [keyword, setKeyword] = useState("");
+  const [activeChip, setActiveChip] = useState("");
 
   useEffect(() => {
     const fetchContests = async () => {
+      setLoading(true);
+      setError(null);
+
       try {
         const response = await fetch("http://127.0.0.1:8000/api/v1/competitions/recommend");
         if (!response.ok) throw new Error("Failed to fetch recommendations");
 
         const data = await response.json();
-
         const mappedData = data.map((item, index) => ({
           id: item.id || index,
           title: item.name,
@@ -97,150 +97,101 @@ export default function ContestRecommendationPage() {
 
         setContests(mappedData);
       } catch (err) {
-        console.error("Error fetching contests:", err);
-        // 백엔드 아직이면 에러 띄우지 말고 fallback으로 보여주기 (UI 검수용)
-        setError(null);
-        setContests(fallbackContests);
+        // 백엔드 미연결이면 UI 확인 위해 mock으로 보여주기
+        console.error(err);
+        setError("공모전 정보를 불러오는 중 오류가 발생했습니다. (현재는 Mock 데이터로 보여줄게요)");
+        setContests(MOCK_CONTESTS);
       } finally {
         setLoading(false);
       }
     };
 
     fetchContests();
-  }, [fallbackContests]);
+  }, []);
 
-  // 상단 필터 chip(지금 UI 고정)
-  const filterChips = ["캠퍼스타운 공모전", "예비창업자 패키지", "중소기업 벤처사업부 / 기획"];
+  // UI 필터링(백엔드 없어도 동작)
+  const filtered = useMemo(() => {
+    const kw = keyword.trim().toLowerCase();
+    return contests.filter((c) => {
+      const matchKw =
+        !kw ||
+        c.title.toLowerCase().includes(kw) ||
+        c.organization.toLowerCase().includes(kw) ||
+        (c.categories || []).some((t) => String(t).toLowerCase().includes(kw));
+
+      const matchChip = !activeChip || (c.categories || []).includes(activeChip);
+
+      return matchKw && matchChip;
+    });
+  }, [contests, keyword, activeChip]);
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#ffffff" }}>
       <Header />
 
-      {/* ❗ 잘림 방지: main에 padding-top 크게 주고, 헤더 높이에 영향을 덜 받게 */}
       <main
         style={{
-          maxWidth: 1200,
+          maxWidth: "1200px",
           margin: "0 auto",
-          padding: "40px 24px 80px",
+          // ✅ 여기만 늘리면 “위가 바짝 붙는 느낌” 해결됨
+          // Header가 fixed일 가능성까지 고려해서 여유 있게 64px로
+          padding: "64px 20px 72px",
         }}
       >
-        {/* Search */}
-        <section style={{ marginTop: 8 }}>
-          <SearchBar />
-        </section>
-
-        {/* Divider Line (검색바 아래 보라 라인 느낌) */}
-        <div
-          style={{
-            height: 2,
-            backgroundColor: PRIMARY,
-            opacity: 0.9,
-            marginTop: 12,
-            marginBottom: 24,
-          }}
-        />
-
-        {/* Filter Chips Row */}
-        <div
-          style={{
-            display: "flex",
-            gap: 14,
-            flexWrap: "wrap",
-            alignItems: "center",
-            marginBottom: 40,
-          }}
-        >
-          {filterChips.map((chip) => (
-            <button
-              key={chip}
-              style={{
-                border: "1px solid #E5E7EB",
-                background: "#EEF2FF",
-                color: PRIMARY,
-                borderRadius: 999,
-                padding: "14px 22px",
-                fontSize: 16,
-                fontWeight: 600,
-                cursor: "pointer",
-              }}
-            >
-              {chip}
-            </button>
-          ))}
-        </div>
-
-        {/* ================= 타이틀 영역 (네가 원하는 한 줄 버전) ================= */}
+        {/* ✅ SearchBar가 검색/라인/칩까지 “한 번만” 렌더하도록 */}
         <section
           style={{
+            // ✅ 첫 블록이 더 여유 있게 내려오도록
+            marginTop: 24,
+          }}
+        >
+          <SearchBar
+            primaryColor={PRIMARY}
+            value={keyword}
+            onChange={setKeyword}
+            activeChip={activeChip}
+            onChipChange={setActiveChip}
+          />
+        </section>
+
+        {/* ✅ 너가 원한 타이틀(한 줄) + 말풍선(우측) */}
+        <section
+          style={{
+            marginTop: 40, // ✅ 타이틀도 위와 간격 여유
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            gap: 24,
+            gap: 16,
             flexWrap: "wrap",
-            marginBottom: 28,
           }}
         >
-          {/* 왼쪽: 한 줄 타이틀 */}
           <h1
             style={{
               margin: 0,
-              fontSize: 34, // 스샷 느낌: 큼직하지만 과하지 않게
-              fontWeight: 800,
-              lineHeight: 1.35,
+              fontSize: 34,
+              lineHeight: 1.25,
+              letterSpacing: "-0.02em",
+              fontWeight: 700, // 너무 굵지 않게
               color: "#111827",
               display: "flex",
               alignItems: "center",
-              gap: 10,
               flexWrap: "wrap",
+              gap: 10,
             }}
           >
-            <button
-              style={{
-                border: "none",
-                background: "transparent",
-                color: PRIMARY,
-                fontWeight: 800,
-                cursor: "pointer",
-                padding: 0,
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 6,
-                fontSize: "inherit",
-              }}
-            >
-              인공지능 활용 기술 <ChevronDown size={22} />
-            </button>
-
-            <span>을 활용한</span>
-
-            <button
-              style={{
-                border: "none",
-                background: "transparent",
-                color: PRIMARY,
-                fontWeight: 800,
-                cursor: "pointer",
-                padding: 0,
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 6,
-                fontSize: "inherit",
-              }}
-            >
-              세종대학교 <ChevronDown size={22} />
-            </button>
-
-            <span>학생을 위한 공고 추천</span>
+            <span style={{ color: PRIMARY, fontWeight: 800 }}>인공지능 활용 기술</span>
+            <span style={{ fontWeight: 700 }}>을 활용한</span>
+            <span style={{ color: PRIMARY, fontWeight: 800 }}>세종대학교</span>
+            <span style={{ fontWeight: 700 }}>학생을 위한 공고 추천</span>
           </h1>
 
-          {/* 오른쪽: 말풍선 */}
           <div
             style={{
-              backgroundColor: "#111827",
-              color: "#ffffff",
+              background: "#111827",
+              color: "#fff",
               padding: "10px 14px",
               borderRadius: 10,
-              fontSize: 14,
+              fontSize: 13,
               fontWeight: 600,
               whiteSpace: "nowrap",
             }}
@@ -249,29 +200,44 @@ export default function ContestRecommendationPage() {
           </div>
         </section>
 
-        {/* Loading / Error / Grid */}
-        {loading ? (
-          <div style={{ textAlign: "center", padding: 48, color: "#6B7280", fontWeight: 500 }}>
-            추천 공모전을 불러오는 중입니다...
-          </div>
-        ) : error ? (
-          <div style={{ textAlign: "center", padding: 48, color: "#EF4444", fontWeight: 500 }}>
-            {error}
-          </div>
-        ) : (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(360px, 1fr))",
-              gap: 20,
-              paddingBottom: 24,
-            }}
-          >
-            {contests.map((contest) => (
-              <ContestCard key={contest.id} {...contest} />
-            ))}
-          </div>
-        )}
+        {/* Grid */}
+        <section style={{ marginTop: 22 }}>
+          {loading ? (
+            <div style={{ textAlign: "center", padding: "48px 0", color: "#6B7280" }}>
+              추천 공모전을 불러오는 중입니다...
+            </div>
+          ) : error ? (
+            <>
+              <div style={{ textAlign: "center", padding: "16px 0", color: "#EF4444", fontWeight: 600 }}>
+                {error}
+              </div>
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+                  gap: 18,
+                }}
+              >
+                {filtered.map((contest) => (
+                  <ContestCard key={contest.id} {...contest} primaryColor={PRIMARY} />
+                ))}
+              </div>
+            </>
+          ) : (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+                gap: 18,
+              }}
+            >
+              {filtered.map((contest) => (
+                <ContestCard key={contest.id} {...contest} primaryColor={PRIMARY} />
+              ))}
+            </div>
+          )}
+        </section>
       </main>
 
       <Footer />

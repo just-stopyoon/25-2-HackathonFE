@@ -2,24 +2,7 @@ import React, { useState, useEffect } from 'react';
 import SearchBar from '../components/Search/SearchBar';
 import ContestCard from '../components/Card/ContestCard';
 import Footer from '../components/Layout/Footer';
-
-// Header/Nav component specific to this page (or global later)
-const Header = () => (
-    <header style={{
-        padding: 'var(--spacing-md) var(--spacing-xl)',
-        borderBottom: '1px solid var(--border)',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        backgroundColor: 'white'
-    }}>
-        <div style={{ fontWeight: '800', color: 'var(--primary)', fontSize: '1.5rem' }}>BIZSTEP</div>
-        <div style={{ display: 'flex', gap: 'var(--spacing-lg)', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-            <span>로그아웃</span>
-            <span>마이 페이지</span>
-        </div>
-    </header>
-);
+import Header from '../components/Layout/Header';
 
 // Placeholder images to cycle through
 const PLACEHOLDER_IMAGES = [

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Star, Share2, Printer } from 'lucide-react';
 import Footer from '../components/Layout/Footer';
+import Header from '../components/Layout/Header';
 
 const ContestDetailPage = () => {
     const { id } = useParams();
-    const navigate = useNavigate();
 
     const [contest, setContest] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -65,25 +65,8 @@ const ContestDetailPage = () => {
     return (
         <div style={{ minHeight: '100vh', backgroundColor: '#ffffff' }}>
             {/* Header (Reused) */}
-            <header style={{
-                padding: 'var(--spacing-md) var(--spacing-xl)',
-                borderBottom: '1px solid var(--border)',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                backgroundColor: 'white'
-            }}>
-                <div
-                    onClick={() => navigate('/recommendations')}
-                    style={{ fontWeight: '800', color: 'var(--primary)', fontSize: '1.5rem', cursor: 'pointer' }}
-                >
-                    BIZSTEP
-                </div>
-                <div style={{ display: 'flex', gap: 'var(--spacing-lg)', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-                    <span>로그아웃</span>
-                    <span>마이 페이지</span>
-                </div>
-            </header>
+            {/* Header (Reused) */}
+            <Header />
 
             <main style={{ maxWidth: '1200px', margin: '0 auto', padding: 'var(--spacing-xl) var(--spacing-md)' }}>
                 {/* Title Section */}

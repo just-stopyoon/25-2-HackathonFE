@@ -1,6 +1,8 @@
 import React from 'react';
 import Sidebar from '../Navigation/Sidebar';
+
 import Footer from './Footer';
+import Header from './Header';
 
 const MainLayout = ({ children, activeSection, onSectionClick }) => {
     return (
@@ -9,15 +11,23 @@ const MainLayout = ({ children, activeSection, onSectionClick }) => {
             <main style={{
                 flex: 1,
                 marginLeft: '280px',
-                padding: 'var(--spacing-xl)',
-                maxWidth: '1200px', /* Limit content width for readability */
-                width: '100%'
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column'
             }}>
-                <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-                    {children}
-                </div>
-                <div style={{ marginTop: 'auto' }}>
-                    <Footer />
+                <Header />
+                <div style={{
+                    padding: 'var(--spacing-xl)',
+                    maxWidth: '1200px',
+                    width: '100%',
+                    margin: '0 auto'
+                }}>
+                    <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+                        {children}
+                    </div>
+                    <div style={{ marginTop: 'auto' }}>
+                        <Footer />
+                    </div>
                 </div>
             </main>
         </div>

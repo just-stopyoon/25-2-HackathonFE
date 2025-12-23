@@ -83,8 +83,17 @@ export default function ContestRecommendationPage() {
       setLoading(true);
       setError(null);
 
+      // 저장된 프로젝트 ID 확인
+      const projectId = localStorage.getItem("bizstep:projectId");
+      if (!projectId) {
+        // 프로젝트 ID가 없으면 경고 후 리다이렉트 (또는 Mock 모드)
+        alert("프로젝트 정보가 없습니다. 프로젝트를 먼저 생성해주세요.");
+        navigate("/project");
+        return;
+      }
+
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/v1/competitions/recommend/1", {
+        const response = await fetch(`http://127.0.0.1:8000/api/v1/competitions/recommend/${projectId}`, {
           method: "POST",
         });
         if (!response.ok) throw new Error("Failed to fetch recommendations");
@@ -112,7 +121,7 @@ export default function ContestRecommendationPage() {
     };
 
     fetchContests();
-  }, []);
+  }, [navigate]);
 
   // UI 필터링(백엔드 없어도 동작)
   const filtered = useMemo(() => {

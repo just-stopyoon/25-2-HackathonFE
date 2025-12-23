@@ -39,14 +39,30 @@ const INITIAL_PLAN_DATA = [
 
 // --- 서브 컴포넌트: 상태 배지 ---
 function StatusBadge({ status }) {
-  const isRed = status === "첨부 필요";
+  const isRed = status === "첨부 필요" || status === "생성 실패";
+  const isPending = status === "생성중...";
+
+  let color = PRIMARY;
+  let bg = "#E0E7FF";
+  let border = "#C7D2FE";
+
+  if (isRed) {
+    color = "#DC2626";
+    bg = "#FEE2E2";
+    border = "#FCA5A5";
+  } else if (isPending) {
+    color = "#D97706"; // Amber 600
+    bg = "#FEF3C7";    // Amber 100
+    border = "#FCD34D"; // Amber 300
+  }
+
   return (
     <span style={{
       display: "inline-flex", alignItems: "center", justifyContent: "center",
       height: 24, padding: "0 10px", borderRadius: 4, fontSize: 12, fontWeight: 700,
-      color: isRed ? "#DC2626" : PRIMARY,
-      background: isRed ? "#FEE2E2" : "#E0E7FF",
-      border: `1px solid ${isRed ? "#FCA5A5" : "#C7D2FE"}`,
+      color: color,
+      background: bg,
+      border: `1px solid ${border}`,
       whiteSpace: "nowrap",
     }}>
       {status}
@@ -101,28 +117,28 @@ function BusinessPlanEditor({ planData, setPlanData, onComplete }) {
       ))}
 
       {/* --- 하단 버튼 영역: 낑기지 않게 넉넉히 배치 --- */}
-      <div style={{ 
-        display: "flex", 
-        justifyContent: "center", 
-        gap: "16px", 
-        marginTop: "80px", 
-        paddingTop: "40px", 
-        borderTop: `1px solid ${BORDER_LIGHT}` 
+      <div style={{
+        display: "flex",
+        justifyContent: "center",
+        gap: "16px",
+        marginTop: "80px",
+        paddingTop: "40px",
+        borderTop: `1px solid ${BORDER_LIGHT}`
       }}>
-        <button 
+        <button
           onClick={onComplete}
-          style={{ 
-            background: PRIMARY, color: "#fff", border: "none", 
-            padding: "16px 48px", borderRadius: 10, fontWeight: 800, 
+          style={{
+            background: PRIMARY, color: "#fff", border: "none",
+            padding: "16px 48px", borderRadius: 10, fontWeight: 800,
             cursor: "pointer", fontSize: "16px", boxShadow: "0 4px 12px rgba(51, 56, 160, 0.2)"
           }}
         >
           작성 완료하기
         </button>
-        <button style={{ 
-          background: "#E5E7EB", color: "#4B5563", border: "none", 
-          padding: "16px 48px", borderRadius: 10, fontWeight: 800, 
-          cursor: "pointer", fontSize: "16px" 
+        <button style={{
+          background: "#E5E7EB", color: "#4B5563", border: "none",
+          padding: "16px 48px", borderRadius: 10, fontWeight: 800,
+          cursor: "pointer", fontSize: "16px"
         }}>
           임시 저장
         </button>
@@ -135,27 +151,147 @@ function BusinessPlanEditor({ planData, setPlanData, onComplete }) {
 export default function ContestApplyPage() {
   const { id } = useParams();
   const fileRef = useRef(null);
-  
+
   // 상태 관리 (상위에서 관리하여 화면 전환 시에도 데이터 유지)
   const [hasTemplate, setHasTemplate] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [docs, setDocs] = useState([]);
   const [planData, setPlanData] = useState(INITIAL_PLAN_DATA);
-  
+
   const contest = useMemo(() => MOCK_CONTEST, []);
 
+  // PDF 업로드 함수
+  const uploadFile = async (file) => {
+    // 저장된 프로젝트 ID 확인
+    const projectId = localStorage.getItem("bizstep:projectId");
+    if (!projectId) {
+      alert("프로젝트 정보가 없습니다. 프로젝트를 먼저 생성해주세요.");
+      return null;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file); // 422 에러 대응: 'pdf' -> 'file'
+    formData.append("project_id", projectId);
+
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/api/v1/projects/${projectId}/upload-pdf`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (res.ok) {
+        alert("업로드가 완료되었습니다!");
+        const data = await res.json();
+        return data; // 성공 시 응답 데이터 반환
+      } else {
+        const err = await res.json();
+        alert(`업로드 실패: ${err.detail || "알 수 없는 오류"}`);
+        return null;
+      }
+    } catch (e) {
+      console.error(e);
+      alert("업로드 중 네트워크 오류가 발생했습니다.");
+      return null;
+    }
+  };
+
+  // API 응답을 planData 형식으로 변환하는 함수
+  const mapApiResponseToPlanData = (apiData) => {
+    if (!apiData || !apiData.sections) return INITIAL_PLAN_DATA;
+
+    // 그룹 정의
+    const groups = {
+      problem: { title: "1. 문제인식 (Problem)", subs: [] },
+      solution: { title: "2. 실현가능성 (Solution)", subs: [] },
+      scaleup: { title: "3. 성장전략 (Scale-up)", subs: [] },
+      team: { title: "4. 팀 구성 (Team)", subs: [] },
+    };
+
+    apiData.sections.forEach((sec) => {
+      // section_id 예: "problem_1_1" -> keys: ["problem", "1", "1"]
+      const parts = sec.section_id.split("_");
+      const category = parts[0]; // problem, solution, scaleup, team
+
+      if (groups[category]) {
+        // ID 생성 (예: 1-1)
+        const id = parts.length >= 3 ? `${parts[1]}-${parts[2]}` : parts[1];
+
+        // 라벨 정제 (제목에서 앞부분 "1-1. " 제거) (단순화: 제목 그대로 쓰거나 점 뒤 text 추출)
+        // 예: "1-1. 창업아이템의 개발 동기" -> "창업아이템의 개발 동기"
+        let label = sec.title;
+        const dotIndex = sec.title.indexOf(". ");
+        if (dotIndex !== -1) {
+          label = sec.title.substring(dotIndex + 2);
+        }
+
+        groups[category].subs.push({
+          id: id,
+          label: label,
+          content: sec.draft_text || ""
+        });
+      }
+    });
+
+    // 객체를 배열로 변환 (순서 보장: problem -> solution -> scaleup -> team)
+    const result = [
+      groups.problem,
+      groups.solution,
+      groups.scaleup,
+      groups.team
+    ].filter(g => g.subs.length > 0) // 데이터 있는 것만
+      .map(g => ({
+        title: g.title,
+        sub: g.subs
+      }));
+
+    return result.length > 0 ? result : INITIAL_PLAN_DATA;
+  };
+
   // 양식 첨부 핸들러
-  const onAttachFile = (e) => {
+  const onAttachFile = async (e) => {
     if (e.target.files && e.target.files.length > 0) {
-      const fileName = e.target.files[0].name;
-      // 리스트 데이터 업데이트
+      const file = e.target.files[0];
+      const fileName = file.name;
+
+      // 1. UI 즉시 업데이트 (생성중 상태 노출)
       setDocs([
-        { id: "d1", status: "생성 완료", name: "캠퍼스타운_사업계획서", updatedAt: "2025.12.11", action: "수정" },
+        { id: "d1", status: "생성중...", name: "캠퍼스타운_사업계획서", updatedAt: "생성중...", action: "대기" },
         { id: "d2", status: "첨부 완료", name: fileName, updatedAt: "방금 전", action: "수정" },
         { id: "d3", status: "첨부 필요", name: "대표자_신분증 사본", updatedAt: "", action: "업로드" },
         { id: "d4", status: "첨부 필요", name: "대표자_통장 사본", updatedAt: "", action: "업로드" },
       ]);
-      setHasTemplate(true);
+      setHasTemplate(true); // 화면 전환
+
+      // 2. 비동기 업로드 호출
+      const data = await uploadFile(file);
+
+      // 3. 결과 반영
+      if (data) {
+        // 성공 시
+        alert("업로드가 완료되었습니다!");
+        const formattedPlan = mapApiResponseToPlanData(data);
+        setPlanData(formattedPlan);
+
+        setDocs((prev) =>
+          prev.map((d) =>
+            d.id === "d1"
+              ? { ...d, status: "생성 완료", updatedAt: "방금 전", action: "수정" }
+              : d
+          )
+        );
+      } else {
+        // 실패 시
+        // (uploadFile 내부에서 alert는 이미 뜸)
+        setDocs((prev) =>
+          prev.map((d) =>
+            d.id === "d1"
+              ? { ...d, status: "생성 실패", updatedAt: "-", action: "재시도" }
+              : d
+          )
+        );
+        // input 초기화
+        if (fileRef.current) fileRef.current.value = "";
+      }
     }
   };
 
@@ -164,7 +300,7 @@ export default function ContestApplyPage() {
       <Header />
 
       <main style={{ maxWidth: 1100, margin: "0 auto", padding: "80px 20px 120px" }}>
-        
+
         {/* --- 상단 공고 정보 카드: 어떤 화면에서도 사라지지 않게 항상 노출 --- */}
         <section style={{ background: "#F7F7F8", borderRadius: 12, padding: "32px 40px", marginBottom: 60, border: `1px solid ${BORDER_LIGHT}` }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
@@ -183,8 +319,8 @@ export default function ContestApplyPage() {
                 <button style={{ height: 38, padding: "0 18px", borderRadius: 8, border: "1px solid #D1D5DB", background: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
                   홈페이지 확인 <ExternalLink size={14} />
                 </button>
-                <button 
-                  onClick={() => fileRef.current?.click()} 
+                <button
+                  onClick={() => fileRef.current?.click()}
                   style={{ height: 38, padding: "0 18px", borderRadius: 8, border: `1px solid ${PRIMARY}`, background: "#fff", color: PRIMARY, fontSize: 13, fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}
                 >
                   <Paperclip size={16} /> 양식 첨부하기
@@ -206,10 +342,10 @@ export default function ContestApplyPage() {
         {/* --- 조건부 렌더링 영역 --- */}
         {isEditing ? (
           /* 1. 사업계획서 수정 화면 */
-          <BusinessPlanEditor 
-            planData={planData} 
-            setPlanData={setPlanData} 
-            onComplete={() => setIsEditing(false)} 
+          <BusinessPlanEditor
+            planData={planData}
+            setPlanData={setPlanData}
+            onComplete={() => setIsEditing(false)}
           />
         ) : !hasTemplate ? (
           /* 2. 양식 미첨부 빈 화면 (슬픈 얼굴) */
@@ -251,7 +387,7 @@ export default function ContestApplyPage() {
                     <div style={{ fontSize: 15, fontWeight: 900, color: d.status === "첨부 필요" ? "#9CA3AF" : PRIMARY }}>{d.name}</div>
                   </div>
                   <div style={{ display: "flex", justifyContent: "center", gap: 14 }}>
-                    <button onClick={() => { if(d.name.includes("사업계획서")) setIsEditing(true); }} style={{ padding: "8px 24px", borderRadius: 2, border: `1px solid #D1D5DB`, background: "#fff", fontSize: 13, fontWeight: 800, cursor: "pointer" }}>
+                    <button onClick={() => { if (d.name.includes("사업계획서")) setIsEditing(true); }} style={{ padding: "8px 24px", borderRadius: 2, border: `1px solid #D1D5DB`, background: "#fff", fontSize: 13, fontWeight: 800, cursor: "pointer" }}>
                       {d.action}
                     </button>
                     <Trash2 size={20} color="#9CA3AF" style={{ cursor: "pointer" }} />
@@ -261,9 +397,9 @@ export default function ContestApplyPage() {
             </div>
             {/* 리스트 하단에도 제출하기 버튼을 추가하여 흐름 보완 */}
             <div style={{ display: "flex", justifyContent: "center", marginTop: 60 }}>
-                <button style={{ background: PRIMARY, color: "#fff", border: "none", padding: "16px 60px", borderRadius: 10, fontWeight: 800, cursor: "pointer", fontSize: "16px" }}>
-                    최종 제출하기
-                </button>
+              <button style={{ background: PRIMARY, color: "#fff", border: "none", padding: "16px 60px", borderRadius: 10, fontWeight: 800, cursor: "pointer", fontSize: "16px" }}>
+                최종 제출하기
+              </button>
             </div>
           </section>
         )}

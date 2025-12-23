@@ -172,7 +172,7 @@ export default function ProjectInfoPage() {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) Object.assign(init, JSON.parse(saved));
-    } catch {}
+    } catch { }
 
     setAnswers(init);
   }, []);
@@ -205,6 +205,12 @@ export default function ProjectInfoPage() {
       });
 
       if (res.ok) {
+        const data = await res.json();
+        // project_id 저장 (ContestApplyPage 등에서 사용)
+        if (data.id) {
+          localStorage.setItem("bizstep:projectId", data.id);
+        }
+
         localStorage.removeItem(STORAGE_KEY);
         navigate("/recommendations");
       } else {

@@ -1,5 +1,6 @@
 import React from 'react';
 import Sidebar from '../Navigation/Sidebar';
+import Footer from './Footer';
 
 const MainLayout = ({ children, activeSection, onSectionClick }) => {
     return (
@@ -14,6 +15,9 @@ const MainLayout = ({ children, activeSection, onSectionClick }) => {
             }}>
                 <div style={{ maxWidth: '900px', margin: '0 auto' }}>
                     {children}
+                </div>
+                <div style={{ marginTop: 'auto' }}>
+                    <Footer />
                 </div>
             </main>
         </div>

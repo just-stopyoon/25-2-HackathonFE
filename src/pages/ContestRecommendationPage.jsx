@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import SearchBar from '../components/Search/SearchBar';
 import ContestCard from '../components/Card/ContestCard';
+import Footer from '../components/Layout/Footer';
 
 // Header/Nav component specific to this page (or global later)
 const Header = () => (
@@ -122,6 +123,7 @@ const ContestRecommendationPage = () => {
                 )}
 
             </main>
+            <Footer />
         </div>
     );
 };
